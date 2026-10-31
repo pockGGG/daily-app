@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 import calendar
+import os
 from datetime import datetime
 
 app = Flask(__name__)
@@ -161,5 +162,15 @@ def update():
     
     return redirect(url_for('index', month=task_date[:7]))
 
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # 環境変数FLASK_DEBUGが'1'の場合のみ、Debugモードを有効にする
+    # ローカル開発時は'1'を設定し、AWS公開時は設定しないことで切り替える
+    DEBUG = os.environ.get('FLASK_DEBUG') == '1'
+    
+    # Flaskアプリを起動する
+    app.run(
+        host='0.0.0.0',
+        port=5000,
+        debug=DEBUG
+    )
