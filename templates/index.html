@@ -4,68 +4,371 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>デイリータスク・目標管理</title>
+    <title>デイリータスク・目標管理シート🍏</title>
     <meta name="apple-mobile-web-app-title" content="タスク管理">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
     <!-- iPhone / iPad 用 -->
-<link rel="apple-touch-icon" href="{{ url_for('static', filename='icon.png') }}">
-
-<!-- Android / PCブラウザ用 -->
-<link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon.png') }}">
+    <!-- Android / PCブラウザ用 -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
 
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 1200px; margin: 20px auto; padding: 0 15px; background-color: #f8f9fa; }
-        h1 { color: #333; border-bottom: 3px solid #e67e22; padding-bottom: 8px; margin-bottom: 20px; font-size: 22px; }
-        
-        .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-        
-        .month-tabs { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 5px; }
-        .tab-btn { padding: 8px 14px; background: #e0e0e0; border: 1px solid #ccc; border-radius: 6px 6px 0 0; text-decoration: none; color: #555; font-weight: bold; font-size: 13px; whitespace: nowrap; }
-        .tab-btn.active { background: #e67e22; color: white; border-color: #e67e22; }
-        
-        .month-select { padding: 6px 10px; border-radius: 4px; border: 1px solid #e67e22; font-weight: bold; color: #d35400; cursor: pointer; }
+        /* ==========================================
+        1. 全体・PC版の基本スタイル（画面幅769px以上）
+        ========================================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
 
-        table { width: 100%; border-collapse: collapse; background: #ffffff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 6px; overflow: hidden; }
-        th { background-color: #e67e22; color: white; padding: 8px; text-align: center; font-size: 13px; border: 1px solid #d35400; }
-        td { border: 1px solid #e0e0e0; padding: 5px 6px; font-size: 13px; text-align: center; vertical-align: middle; }
-        
-        tr.sat { background-color: #e8f4fc; }
-        tr.sun { background-color: #fde8e8; }
-        
-        input.cell-input { width: 92%; padding: 5px; border: 1px solid #ddd; border-radius: 3px; font-size: 13px; }
-        input.cell-input:focus { border-color: #e67e22; outline: none; background-color: #fffde7; }
-        
-        /* 備考・メモ用タップ可能入力表示エリア */
-        .memo-preview { width: 92%; padding: 5px; border: 1px dashed #bbb; border-radius: 3px; font-size: 12px; background-color: #fafafa; cursor: pointer; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; margin: 0 auto; color: #333; }
-        .memo-preview:hover { background-color: #fffde7; border-color: #e67e22; }
-        .memo-preview.empty { color: #aaa; font-style: italic; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            max-width: 1200px; 
+            margin: 20px auto; 
+            padding: 0 15px; 
+            background-color: #f8f9fa; 
+            color: #333;
+        }
 
-        select.status-select { padding: 4px 6px; border-radius: 4px; font-weight: bold; font-size: 13px; border: 1px solid #ccc; cursor: pointer; }
+        h1 { 
+            color: #2c3e50; 
+            border-bottom: 3px solid #7ac142; 
+            padding-bottom: 8px; 
+            margin-bottom: 20px; 
+            font-size: 22px; 
+        }
+
+        /* 上部ナビゲーション（PCでは左右に綺麗に配置） */
+        .header-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 15px; 
+            gap: 12px; 
+            width: 100%;
+        }
+
+        .month-tabs { 
+            display: flex; 
+            gap: 4px; 
+            overflow-x: auto; 
+            padding-bottom: 5px; 
+        }
+
+        .tab-btn { 
+            padding: 8px 14px; 
+            background: #e0e0e0; 
+            border: 1px solid #ccc; 
+            border-radius: 6px 6px 0 0; 
+            text-decoration: none; 
+            color: #555; 
+            font-weight: bold; 
+            font-size: 13px; 
+            white-space: nowrap; 
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active { 
+            background: #7ac142; 
+            color: white; 
+            border-color: #7ac142; 
+        }
+
+        .month-select { 
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            border: 1px solid #7ac142; 
+            font-weight: bold; 
+            color: #d35400; 
+            cursor: pointer; 
+            background-color: #ffffff;
+            font-size: 13px;
+        }
+
+        /* テーブル包み枠（PCでは画面幅にピッタリ一致） */
+        .table-wrapper {
+            width: 100%;
+            background: #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+
+        th { 
+            background-color: #7ac142; 
+            color: white; 
+            padding: 10px 8px; 
+            text-align: center; 
+            font-size: 13px; 
+            border: 1px solid #7ac142; 
+            white-space: nowrap;
+        }
+
+        td { 
+            border: 1px solid #e8e8e8; 
+            padding: 6px 8px; 
+            font-size: 13px; 
+            text-align: center; 
+            vertical-align: middle; 
+        }
+
+        tr.sat { background-color: #f0f7fc; }
+        tr.sun { background-color: #fdf0f0; }
+        tr:hover { background-color: #fffbe6; } /* PCでのカーソルホバー強調 */
+
+        /* 自動伸縮テキストエリア */
+        textarea.auto-expand {
+            width: 100%;
+            min-height: 36px;
+            height: 36px;
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+            resize: none;
+            overflow-y: hidden;
+            white-space: pre-wrap;
+            word-break: break-word;
+            box-sizing: border-box;
+            transition: border-color 0.2s, background-color 0.2s;
+            display: block;
+        }
+
+        textarea.auto-expand:focus {
+            border-color: #7ac142;
+            outline: none;
+            background-color: #fffde7;
+            box-shadow: 0 0 4px rgba(230, 126, 34, 0.3);
+        }
+
+        .memo-preview { 
+            width: 100%; 
+            padding: 6px 8px; 
+            border: 1px dashed #bbb; 
+            border-radius: 4px; 
+            font-size: 12px; 
+            background-color: #fafafa; 
+            cursor: pointer; 
+            text-align: left; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            display: block; 
+            color: #333; 
+        }
+
+        select.status-select, select.motivation-select { 
+            width: 100%;
+            padding: 6px 8px; 
+            border-radius: 4px; 
+            font-size: 13px; 
+            border: 1px solid #ccc; 
+            cursor: pointer; 
+            background-color: #fff;
+        }
+        select.status-select { font-weight: bold; }
         select.status-◎ { background-color: #d4edda; color: #155724; }
         select.status-○ { background-color: #cce5ff; color: #004085; }
         select.status-△ { background-color: #fff3cd; color: #856404; }
         select.status-× { background-color: #f8d7da; color: #721c24; }
         select.status-未 { background-color: #e2e3e5; color: #383d41; }
-        
-        select.motivation-select { padding: 4px 6px; border-radius: 4px; font-size: 13px; border: 1px solid #ccc; cursor: pointer; }
-        
-        button.save-btn { background-color: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 3px; font-size: 12px; cursor: pointer; }
+
+        button.save-btn { 
+            background-color: #3498db; 
+            color: white; 
+            border: none; 
+            padding: 6px 12px; 
+            border-radius: 4px; 
+            font-size: 12px; 
+            font-weight: bold;
+            cursor: pointer; 
+            width: 100%;
+        }
         button.save-btn:hover { background-color: #2980b9; }
 
-        /* モーダルウィンドウ（画面中央のポップアップ）のスタイル */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; width: 90%; max-width: 500px; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .modal-header { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #e67e22; border-bottom: 2px solid #eee; padding-bottom: 6px; }
-        .modal-textarea { width: 100%; height: 140px; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: vertical; }
+        /* モーダル */
+        .modal-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.5); 
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 15px;
+        }
+        .modal-content { 
+            background: white; 
+            width: 100%; 
+            max-width: 500px; 
+            padding: 20px; 
+            border-radius: 10px; 
+        }
+        .modal-header { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #7ac142; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        .modal-textarea { width: 100%; height: 140px; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 6px; resize: vertical; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
-        .modal-btn { padding: 8px 16px; border-radius: 4px; font-size: 13px; cursor: pointer; border: none; font-weight: bold; }
+        .modal-btn { padding: 9px 18px; border-radius: 6px; font-size: 13px; cursor: pointer; border: none; font-weight: bold; }
         .modal-btn-cancel { background: #e0e0e0; color: #333; }
-        .modal-btn-save { background: #e67e22; color: white; }
+        .modal-btn-save { background: #7ac142; color: white; }
+
+
+        /* ==========================================
+        2. スマホ専用スタイル（画面幅768px以下のときだけ発動）
+        ========================================== */
+        
+        @media (max-width: 768px) {
+            body { 
+                padding: 0 10px; 
+                margin: 10px auto; 
+            }
+
+            h1 { 
+                font-size: 18px; 
+                margin-bottom: 12px; 
+            }
+            
+            .header-nav { 
+                flex-direction: column; 
+                align-items: stretch; 
+                gap: 8px; 
+            }
+
+            .month-select { 
+                width: 100%; 
+            }
+
+            /* テーブルの囲み枠をカードコンテナに変更 */
+            .table-wrapper {
+                background: transparent;
+                border: none;
+                box-shadow: none;
+                overflow-x: visible; /* 横スクロールを完全に解除 */
+            }
+
+            /* テーブルヘッダー（日付・曜日などの見出し行）を非表示 */
+            table thead {
+                display: none;
+            }
+
+            /* テーブル・ボディ・行をブロック要素化 */
+            table, tbody {
+                display: block;
+                width: 100%;
+            }
+
+            /* 1日分（1行）を1枚のカード状に整形 */
+            tbody tr {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                background: #ffffff;
+                border: 1px solid #e0e0e0;
+                border-radius: 10px;
+                padding: 12px;
+                margin-bottom: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+                transition: transform 0.1s;
+            }
+
+            /* 土日のカードアクセント */
+            tbody tr.sat { 
+                background-color: #f4f9fd; 
+                border-left: 5px solid #3498db; 
+            }
+            tbody tr.sun { 
+                background-color: #fdf4f4; 
+                border-left: 5px solid #e74c3c; 
+            }
+
+            /* セル（td）の枠線を消してカード内の要素として配置 */
+            tbody td {
+                display: block;
+                border: none !important;
+                padding: 0 !important;
+                text-align: left;
+            }
+
+            /* --- カード内の各パーツのレイアウト整形 --- */
+
+            /* 1. 日付・曜日と保存ボタンを上部に横並び配置 */
+            tbody tr form {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                width: 100%;
+            }
+
+            /* 日付と保存ボタンのヘッダー行 */
+            tbody td:nth-child(3), /* 日付 */
+            tbody td:nth-child(4)  /* 曜日 */ {
+                display: inline-block;
+            }
+
+            /* カード最上部のヘッダー情報（日付・曜日・保存ボタン） */
+            tbody td:first-child,
+            tbody td:nth-child(2) {
+                display: none; /* hidden input 用 */
+            }
+
+            /* 日付と曜日テキストのスタイル */
+            tbody td:nth-child(3) strong,
+            tbody td:nth-child(4) strong {
+                font-size: 16px;
+                color: #2c3e50;
+                margin-right: 6px;
+            }
+
+            /* 保存ボタンを右上に配置するための親要素調整 */
+            tbody tr {
+                position: relative;
+            }
+
+            /* 保存ボタン（カードの右上に固定配置） */
+            tbody td:last-child {
+                position: absolute;
+                top: 10px;
+                right: 12px;
+                width: auto;
+            }
+
+            tbody td:last-child button.save-btn {
+                padding: 6px 14px;
+                font-size: 12px;
+                border-radius: 20px;
+                width: auto;
+            }
+
+            /* 入力エリア（単元名・予定）の調整 */
+            textarea.auto-expand {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            /* 実績とモチベーションを2列並びにする */
+            .status-select, .motivation-select {
+                font-size: 13px;
+                padding: 8px;
+            }
+        }
+        /* 今日のカード・行を強調表示するスタイル */
+        .highlight-today {
+            border: 2px solid #e67e22 !important;
+            box-shadow: 0 0 12px rgba(230, 126, 34, 0.5) !important;
+        }
     </style>
 </head>
 <body>
-    <h1>デイリータスク・目標管理シート</h1>
+    <h1>デイリータスク・目標管理シート🍏</h1>
     
     <div class="header-nav">
         <div class="month-tabs">
@@ -77,7 +380,6 @@
         </div>
         
         <div>
-            <label style="font-size: 12px; font-weight: bold; color: #555;">月を選択: </label>
             <select class="month-select" onchange="location.href='/?month=' + this.value">
                 {% for m in months %}
                 <option value="{{ m }}" {{ 'selected' if m == selected_month else '' }}>
@@ -88,73 +390,75 @@
         </div>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 75px;">日付</th>
-                <th style="width: 35px;">曜日</th>
-                <th style="width: 150px;">学習単元・テーマ</th>
-                <th>予定（タスク内容）</th>
-                <th style="width: 85px;">実績</th>
-                <th style="width: 110px;">モチベーション</th>
-                <th style="width: 180px;">備考・メモ</th>
-                <th style="width: 55px;">保存</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for day in days %}
-            <tr class="{{ 'sat' if day.day_of_week == '土' else ('sun' if day.day_of_week == '日' else '') }}">
-                <form action="/update" method="POST">
-                    <input type="hidden" name="task_date" value="{{ day.task_date }}">
-                    <input type="hidden" name="day_of_week" value="{{ day.day_of_week }}">
-                    
-                    <td><strong>{{ day.task_date[5:] }}</strong></td>
-                    <td><strong>{{ day.day_of_week }}</strong></td>
-                    <td>
-                        <input type="text" name="category" class="cell-input" value="{{ day.category }}" placeholder="単元名">
-                    </td>
-                    <td>
-                        <input type="text" name="planned_task" class="cell-input" value="{{ day.planned_task }}" placeholder="予定を入力...">
-                    </td>
-                    <td>
-                        <select name="status" class="status-select status-{{ day.status }}">
-                            <option value="未" {{ 'selected' if day.status == '未' else '' }}>未</option>
-                            <option value="◎" {{ 'selected' if day.status == '◎' else '' }}>◎</option>
-                            <option value="○" {{ 'selected' if day.status == '○' else '' }}>○</option>
-                            <option value="△" {{ 'selected' if day.status == '△' else '' }}>△</option>
-                            <option value="×" {{ 'selected' if day.status == '×' else '' }}>×</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select name="motivation" class="motivation-select">
-                            <option value="-" {{ 'selected' if day.motivation == '-' else '' }}>-</option>
-                            <option value="絶好調 👊" {{ 'selected' if day.motivation == '絶好調 👊' else '' }}>絶好調 👊</option>
-                            <option value="そこそこ 😆" {{ 'selected' if day.motivation == 'そこそこ 😆' else '' }}>そこそこ 😆</option>
-                            <option value="普通 😳" {{ 'selected' if day.motivation == '普通 😳' else '' }}>普通 😳</option>
-                            <option value="微妙 😫" {{ 'selected' if day.motivation == '微妙 😫' else '' }}>微妙 😫</option>
-                            <option value="限界 💦" {{ 'selected' if day.motivation == '限界 💦' else '' }}>限界 💦</option>
-                        </select>
-                    </td>
-                    <td>
-                        <!-- モーダル起動用のプレビュー枠（タップすると大きく開く） -->
-                        <div class="memo-preview {{ 'empty' if not day.memo else '' }}" 
-                             id="preview-{{ day.task_date }}" 
-                             onclick="openMemoModal('{{ day.task_date }}')">
-                            {{ day.memo if day.memo else 'タップして入力...' }}
-                        </div>
-                        <!-- 実際にフォーム送信される隠しフィールド -->
-                        <input type="hidden" name="memo" id="memo-input-{{ day.task_date }}" value="{{ day.memo }}">
-                    </td>
-                    <td>
-                        <button type="submit" class="save-btn">保存</button>
-                    </td>
-                </form>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- 横スクロール可能ラッパーで包み、レイアウト崩れを完全に防ぐ -->
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 70px;">日付</th>
+                    <th style="width: 40px;">曜日</th>
+                    <th style="width: 160px;">学習単元・テーマ</th>
+                    <th>予定（タスク内容）</th>
+                    <th style="width: 80px;">実績</th>
+                    <th style="width: 120px;">モチベーション</th>
+                    <th style="width: 180px;">備考・メモ</th>
+                    <th style="width: 65px;">保存</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for day in days %}
+                <tr id="card-{{ day.task_date }}" class="{{ 'sat' if day.day_of_week == '土' else ('sun' if day.day_of_week == '日' else '') }}">
+                    <form action="/update" method="POST">
+                        <input type="hidden" name="task_date" value="{{ day.task_date }}">
+                        <input type="hidden" name="day_of_week" value="{{ day.day_of_week }}">
+                        
+                        <td><strong>{{ day.task_date[5:] }}</strong></td>
+                        <td><strong>{{ day.day_of_week }}</strong></td>
+                        <td>
+                            <textarea name="category" class="auto-expand" placeholder="単元名" oninput="autoResize(this)">{{ day.category }}</textarea>
+                        </td>
+                        <td>
+                            <textarea name="planned_task" class="auto-expand" placeholder="予定を入力..." oninput="autoResize(this)">{{ day.planned_task }}</textarea>
+                        </td>
+                        <td>
+                            <select name="status" class="status-select status-{{ day.status }}">
+                                <option value="未" {{ 'selected' if day.status == '未' else '' }}>未</option>
+                                <option value="◎" {{ 'selected' if day.status == '◎' else '' }}>◎</option>
+                                <option value="○" {{ 'selected' if day.status == '〇' else '' }}>○</option>
+                                <option value="△" {{ 'selected' if day.status == '△' else '' }}>△</option>
+                                <option value="×" {{ 'selected' if day.status == '×' else '' }}>×</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="motivation" class="motivation-select">
+                                <option value="-" {{ 'selected' if day.motivation == '-' else '' }}>-</option>
+                                <option value="絶好調 👊" {{ 'selected' if day.motivation == '絶好調 👊' else '' }}>絶好調 👊</option>
+                                <option value="そこそこ 😆" {{ 'selected' if day.motivation == 'そこそこ 😆' else '' }}>そこそこ 😆</option>
+                                <option value="普通 😳" {{ 'selected' if day.motivation == '普通 😳' else '' }}>普通 😳</option>
+                                <option value="微妙 😫" {{ 'selected' if day.motivation == '微妙 😫' else '' }}>微妙 😫</option>
+                                <option value="限界 💦" {{ 'selected' if day.motivation == '限界 💦' else '' }}>限界 💦</option>
+                            </select>
+                        </td>
+                        <td>
+                            <!-- モーダル起動用プレビュー -->
+                            <div class="memo-preview {{ 'empty' if not day.memo else '' }}" 
+                                 id="preview-{{ day.task_date }}" 
+                                 onclick="openMemoModal('{{ day.task_date }}')">
+                                {{ day.memo if day.memo else 'タップして入力...' }}
+                            </div>
+                            <input type="hidden" name="memo" id="memo-input-{{ day.task_date }}" value="{{ day.memo }}">
+                        </td>
+                        <td>
+                            <button type="submit" class="save-btn">保存</button>
+                        </td>
+                    </form>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    <!-- モーダルウィンドウ構造 -->
+    <!-- モーダルウィンドウ -->
     <div class="modal-overlay" id="memoModal">
         <div class="modal-content">
             <div class="modal-header" id="modalDateHeader">メモを編集</div>
@@ -169,7 +473,13 @@
     <script>
         let currentTargetDate = null;
 
-        // モーダルを開く関数
+        // --- 1. テキストエリアの自動伸縮 ---
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        // --- 2. モーダルウィンドウの操作 ---
         function openMemoModal(dateStr) {
             currentTargetDate = dateStr;
             const hiddenInput = document.getElementById('memo-input-' + dateStr);
@@ -184,13 +494,11 @@
             textarea.focus();
         }
 
-        // モーダルを閉じる関数
         function closeMemoModal() {
             document.getElementById('memoModal').style.display = 'none';
             currentTargetDate = null;
         }
 
-        // 確定ボタンを押して表側に反映する関数
         function applyMemoModal() {
             if (!currentTargetDate) return;
             
@@ -204,12 +512,36 @@
                 previewDiv.innerText = 'タップして入力...';
                 previewDiv.classList.add('empty');
             } else {
-                previewDiv.innerText = textareaValue;
+                previewDiv.innerText = textareaValue.replace(/\r?\n/g, ' ');
                 previewDiv.classList.remove('empty');
             }
             
             closeMemoModal();
         }
+
+        // --- 3. ページ読み込み時に実行する処理（1つに集約） ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // ① テキストエリアの初期高さ調整
+            document.querySelectorAll('textarea.auto-expand').forEach(textarea => {
+                autoResize(textarea);
+            });
+
+            // ② 当日への自動ジャンプ＆ハイライト表示
+            const now = new Date();
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const todayStr = `${yyyy}-${mm}-${dd}`;
+
+            const todayElement = document.getElementById('card-' + todayStr);
+
+            if (todayElement) {
+                setTimeout(() => {
+                    todayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    todayElement.classList.add('highlight-today');
+                }, 200);
+            }
+        });
     </script>
 </body>
 </html>
