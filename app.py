@@ -138,10 +138,23 @@ def update():
     conn = sqlite3.connect('tasks.db')
     cursor = conn.cursor()
     
+
     cursor.execute('''
-        INSERT OR REPLACE INTO daily_tasks (task_date, day_of_week, category, planned_task, status, motivation, memo)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', (task_date, day_of_week, category, planned_task, status, motivation, mrs_song, memo))
+        INSERT OR REPLACE INTO daily_tasks
+        (task_date, day_of_week, category, planned_task,
+        status, motivation, mrs_song, memo)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (
+        task_date,
+        day_of_week,
+        category,
+        planned_task,
+        status,
+        motivation,
+        mrs_song,
+        memo
+    ))
+
     
     conn.commit()
     conn.close()
