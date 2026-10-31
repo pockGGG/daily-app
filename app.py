@@ -36,7 +36,9 @@ WEEKDAYS_JA = ["月", "火", "水", "木", "金", "土", "日"]
 
 @app.route('/')
 def index():
-    selected_month = request.args.get('month', '2026-09')
+    # URLパラメータがない場合、現在の年月（例: 2026-11）を自動で取得してデフォルトにする
+    current_default_month = datetime.now().strftime('%Y-%m')
+    selected_month = request.args.get('month', current_default_month)
     
     year, month = map(int, selected_month.split('-'))
     _, num_days = calendar.monthrange(year, month)
