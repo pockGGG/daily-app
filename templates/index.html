@@ -402,6 +402,7 @@
                     <th>予定（タスク内容）</th>
                     <th style="width: 80px;">実績</th>
                     <th style="width: 120px;">モチベーション</th>
+                    <th style="width: 140px;">TODAY'S PICK</th>
                     <th style="width: 180px;">備考・メモ</th>
                     <th style="width: 65px;">保存</th>
                 </tr>
@@ -439,6 +440,9 @@
                                 <option value="微妙 😫" {{ 'selected' if day.motivation == '微妙 😫' else '' }}>微妙 😫</option>
                                 <option value="限界 💦" {{ 'selected' if day.motivation == '限界 💦' else '' }}>限界 💦</option>
                             </select>
+                        </td>
+                        <td>
+                            <input type="text" name="mrs_song" class="mrs-input" value="{{ day.mrs_song }}" placeholder="曲名を入力..." style="width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px;">
                         </td>
                         <td>
                             <!-- モーダル起動用プレビュー -->

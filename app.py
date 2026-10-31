@@ -17,6 +17,7 @@ def init_db():
             planned_task TEXT,
             status TEXT DEFAULT '未',
             motivation TEXT DEFAULT '-',
+            mrs_song TEXT DEFAULT '🍏',
             memo TEXT
         )
     ''')
@@ -26,7 +27,11 @@ def init_db():
     columns = [column[1] for column in cursor.fetchall()]
     if 'motivation' not in columns:
         cursor.execute("ALTER TABLE daily_tasks ADD COLUMN motivation TEXT DEFAULT '-'")
-        
+
+    # ★追加：mrs_song カラムが無い場合は自動追加
+    if 'mrs_song' not in columns:
+        cursor.execute("ALTER TABLE daily_tasks ADD COLUMN mrs_song TEXT DEFAULT ''")    
+    
     conn.commit()
     conn.close()
 
@@ -74,6 +79,7 @@ def index():
                 'planned_task': row.get('planned_task') or '',
                 'status': row.get('status') or '未',
                 'motivation': row.get('motivation') or '-',
+                'mrs_song': row.get('mrs_song') or '',
                 'memo': row.get('memo') or ''
             })
         else:
@@ -85,6 +91,7 @@ def index():
                 'planned_task': '',
                 'status': '未',
                 'motivation': '-',
+                'mrs_song': '',
                 'memo': ''
             })
             
@@ -125,6 +132,7 @@ def update():
     planned_task = request.form.get('planned_task')
     status = request.form.get('status', '未')
     motivation = request.form.get('motivation', '-')
+    mrs_song = request.form.get('mrs_song', '')
     memo = request.form.get('memo')
     
     conn = sqlite3.connect('tasks.db')
@@ -133,7 +141,7 @@ def update():
     cursor.execute('''
         INSERT OR REPLACE INTO daily_tasks (task_date, day_of_week, category, planned_task, status, motivation, memo)
         VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', (task_date, day_of_week, category, planned_task, status, motivation, memo))
+    ''', (task_date, day_of_week, category, planned_task, status, motivation, mrs_song, memo))
     
     conn.commit()
     conn.close()
